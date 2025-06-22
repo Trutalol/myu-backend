@@ -105,8 +105,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (supabaseData.length > 0) {
       supabaseData.forEach(item => {
         // Ensure 'tags' is handled as an array, converting to comma-separated string
-        const tagsString = Array.isArray(item.tags) ? item.tags.join(',') : '';
-        formattedSupabaseData += `- ID: ${item.id}, Name: "${item.name}", University: "${item.university}", Tags: [${tagsString}], LinkedIn: "${item.linkedin}"\n`;
+        // --- MODIFIED: Removed square brackets from around tagsString ---
+        const tagsString = Array.isArray(item.tags) ? item.tags.join(', ') : ''; // Added space after comma for readability
+        formattedSupabaseData += `- ID: ${item.id}, Name: "${item.name}", University: "${item.university}", Tags: ${tagsString}, LinkedIn: "${item.linkedin}"\n`;
       });
     } else {
       formattedSupabaseData += "No users found in the database.\n";
@@ -116,7 +117,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`;
 
     // Construct the full prompt for Gemini, combining Supabase data and user query
-    const fullPrompt = `${formattedSupabaseData}\n\nUser query: "${userPrompt}"\n\nBased on the available users and my query, identify any users that match my intent or provide relevant information. For each matched user, output their details in this exact format: "Name: [Name]|University: [University Name]|Interests: [Comma separated tags]|LinkedIn: [LinkedIn URL]". If no match is found, just say "No matches found."`;
+    // --- MODIFIED: Added emphasis on 'tags/interests' in the prompt ---
+    const fullPrompt = `${formattedSupabaseData}\n\nUser query: "${userPrompt}"\n\nBased on the available users and my query, identify any users whose name, university, or **tags/interests** match the user's intent or provide relevant information. For each matched user, output their details in this exact format: "Name: [Name]|University: [University Name]|Interests: [Comma separated tags]|LinkedIn: [LinkedIn URL]". If no match is found, just say "No matches found."`;
 
     // Construct the request body for the Gemini API
     const requestBody = {
