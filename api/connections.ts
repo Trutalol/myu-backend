@@ -106,7 +106,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       supabaseData.forEach(item => {
         // Ensure 'tags' is handled as an array, converting to comma-separated string
         // --- MODIFIED: Removed square brackets from around tagsString ---
-        formattedSupabaseData += `- ID: ${item.id}, Name: "${item.name}", University: "${item.university}", Tags: $[{item.tags}], LinkedIn: "${item.linkedin}"\n`;
+        formattedSupabaseData += `- ID: ${item.id}, Name: "${item.name}", University: "${item.university}", Tags: [${item.tags}], LinkedIn: "${item.linkedin}"\n`;
       });
     } else {
       formattedSupabaseData += "No users found in the database.\n";
